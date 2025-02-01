@@ -51,6 +51,15 @@ control_mean_age <- mean(control$age)
 control_mean_english <- mean(control$english)
 print(control_mean_age)
 
+#All_together:
+all_mean_Female <- mean(df$female)
+all_mean_GPA <- mean(df$HS_GPA)
+all_mean_age <- mean(df$age)
+all_mean_english <- mean(df$english)
+
+
+
+
 
 
 
