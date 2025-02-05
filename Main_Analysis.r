@@ -105,6 +105,7 @@ coeftest(english_effects_model , vcov = vcovHC(english_effects_model,"HC1"))
 #Question 4
 
 SFP_vs_SSP_first_sem_model <- lm(first_sem_grade ~ ssp_offer + sfp_offer , data =df )
+
 summary(SFP_vs_SSP_first_sem_model)
 
 
@@ -125,8 +126,51 @@ summary(distinct_affects_on_grade_model)
 #Now we will check for Homoskedasticity using white test
 white_test(distinct_affects_on_grade_model)
 #We found that P-value is lower then 0.1 so we will do the white correction
-coeftest(distinct_affects_on_grade_model , vcov = vcovHC(distinct_affects_on_grade_model,"HC1"))
+fixed_distinct_affects_on_grade_model <- vcovHC(distinct_affects_on_grade_model,"HC1")
 
+
+
+#Question 6
+
+linearHypothesis(distinct_affects_on_grade_model, "sfp_offer = ssp_offer",vcov=fixed_distinct_affects_on_grade_model)
+
+critical_f_value <- qf(0.9 , 1 ,998) 
+
+
+
+#Question 7 
+
+#Assuming that the same 5 variables are the distinct ones even after one year and two years:
+#We will run the same model as we ran for one semester, for the end of first year and end of second year.
+distinct_affects_on_grade_first_year_model <- lm(GPA_year1~ssp_offer + sfp_offer+ HS_GPA + age + female + english + finish_in_4_yrs , data = df  )
+#We will check using white test for Homoskedasticity:
+white_test(distinct_affects_on_grade_first_year_model)
+#we found that there is Homoskedasticity
+summary(distinct_affects_on_grade_first_year_model)
+
+distinct_affects_on_grade_second_year_model <- lm(GPA_year2~ssp_offer + sfp_offer+ HS_GPA + age + female + english + finish_in_4_yrs , data = df  )
+white_test(distinct_affects_on_grade_second_year_model)
+#We found that there is heteroskedasticity so we will do the white correction
+coeftest(distinct_affects_on_grade_second_year_model , vcov = vcovHC(distinct_affects_on_grade_second_year_model,"HC1"))
+
+
+
+#Question 8
+#We will first check median of the HS_GPA of students in the sfp + control groups.
+sfp_and_control <- df %>% filter(sfp_offer==1 | control==1)
+
+median_HS_GPA <- median(sfp_and_control$HS_GPA, na.rm = TRUE)
+
+
+sfp_and_control <- sfp_and_control %>% 
+  mutate(above_median = ifelse(HS_GPA > median_HS_GPA, 1, 0))
+
+#Now we will create the linear model that will show the affect of SFP on the grades according to the 2 groups:
+#1) above the median in High school
+#2) below the median in High school
+
+above_and_below_median_model <- lm(first_sem_grade ~ sfp_offer * above_median, data = sfp_and_control)
+summary(above_and_below_median_model)
 
 
 
