@@ -209,9 +209,17 @@ age_mean_not_signup<-mean(group_2$age)
 #First we will take the SFP and control group to look at.
 
 sfp_and_control <- df %>% filter(sfp_offer==1 | control==1)
+
+
+#Question 10:
 #Now we will run the model that was requested.
 grade_for_sfp_signup_model <- lm (first_sem_grade ~ sfp_signup ,  data = sfp_and_control)
 summary(grade_for_sfp_signup_model)
+
+
+#Question 11:
+covariance <- cov(sfp_and_control$sfp_signup, sfp_and_control$sfp_offer)
+
 
 
 
