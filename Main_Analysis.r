@@ -172,6 +172,50 @@ sfp_and_control <- sfp_and_control %>%
 above_and_below_median_model <- lm(first_sem_grade ~ sfp_offer * above_median, data = sfp_and_control)
 summary(above_and_below_median_model)
 
+white_test(above_and_below_median_model)
+#We found that there is no need for white correction.
+#Now we will check out hypotesys that B3 is 0 (above*SFP)
+linearHypothesis(above_and_below_median_model, "sfp_offer:above_median = 0")
+
+
+
+################
+#Part 4
+################
+
+
+#Question 9
+
+#We will create a new df that holds all of the students that were offered with SFP.
+only_sfp_offered <- df %>% filter(sfp_offer==1)
+
+#Now we will calc the means of the background varuables for each group
+#Group 1 - signed up for SFP
+#Group 2 - Didn't sign to SFP
+group_1 <- only_sfp_offered %>% filter(sfp_signup==1)
+female_mean_signup<-mean(group_1$female)
+GPA_mean_signup<-mean(group_1$HS_GPA)
+english_mean_signup<-mean(group_1$english)
+age_mean_signup<-mean(group_1$age)
+
+group_2 <- only_sfp_offered %>% filter(sfp_signup==0)
+female_mean_not_signup<-mean(group_2$female)
+GPA_mean_not_signup<-mean(group_2$HS_GPA)
+english_mean_not_signup<-mean(group_2$english)
+age_mean_not_signup<-mean(group_2$age)
+
+
+#Question 9
+#First we will take the SFP and control group to look at.
+
+sfp_and_control <- df %>% filter(sfp_offer==1 | control==1)
+#Now we will run the model that was requested.
+grade_for_sfp_signup_model <- lm (first_sem_grade ~ sfp_signup ,  data = sfp_and_control)
+summary(grade_for_sfp_signup_model)
+
+
+
+
 
 
 
