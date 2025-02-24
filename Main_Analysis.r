@@ -82,7 +82,7 @@ white_test(background_effects_model)
 #Now we need to fix this using white correction.
 coeftest(background_effects_model , vcov = vcovHC(background_effects_model,"HC1"))
 
-#Now we will check for each individual variabl, and do white correction for them.
+#Now we will check for each individual variable, and do white correction for them.
 age_effects_model <- lm(ssp_offer ~  age, data = ssp_and_control)
 coeftest(age_effects_model , vcov = vcovHC(age_effects_model,"HC1"))
 
@@ -107,11 +107,12 @@ coeftest(english_effects_model , vcov = vcovHC(english_effects_model,"HC1"))
 SFP_vs_SSP_first_sem_model <- lm(first_sem_grade ~ ssp_offer + sfp_offer , data =df )
 
 summary(SFP_vs_SSP_first_sem_model)
-
+#White Test
+white_test(SFP_vs_SSP_first_sem_model)
 
 #Question 5
 
-#To check which variuables affect the most on the grade, we created a big linear model that takes into account all the possible vars
+#To check which variables affect the most on the grade, we created a big linear model that takes into account all the possible vars
 all_affects_on_grade_model <- lm (first_sem_grade ~ ssp_offer + sfp_offer+ HS_GPA + age + female + english + dad_HS_grad + dad_college_grad + mom_HS_grad + mom_college_grad + 
                                     uni_first_choice + finish_in_4_yrs + grad_degree + live_home + work_plans + last_min , data = df )
 summary(all_affects_on_grade_model)
@@ -142,13 +143,20 @@ critical_f_value <- qf(0.9 , 1 ,998)
 
 #Assuming that the same 5 variables are the distinct ones even after one year and two years:
 #We will run the same model as we ran for one semester, for the end of first year and end of second year.
-distinct_affects_on_grade_first_year_model <- lm(GPA_year1~ssp_offer + sfp_offer+ HS_GPA + age + female + english + finish_in_4_yrs , data = df  )
+#BUT! we have a difference between the grades in first semester(in range 0-100) and the grades in first year in second year(in range 0-4):
+#So We create another column with 25 * grade to get 0-100 range.
+df$year_1_GPA_times_25 <- 25*df$GPA_year1
+distinct_affects_on_grade_first_year_model <- lm(year_1_GPA_times_25~ssp_offer + sfp_offer+ HS_GPA + age + female + english + finish_in_4_yrs , data = df  )
+summary(distinct_affects_on_grade_first_year_model)
 #We will check using white test for Homoskedasticity:
 white_test(distinct_affects_on_grade_first_year_model)
 #we found that there is Homoskedasticity
 summary(distinct_affects_on_grade_first_year_model)
 
-distinct_affects_on_grade_second_year_model <- lm(GPA_year2~ssp_offer + sfp_offer+ HS_GPA + age + female + english + finish_in_4_yrs , data = df  )
+#Now we will do the same for second year
+df$year_2_GPA_times_25 <- 25*df$GPA_year2
+distinct_affects_on_grade_second_year_model <- lm(year_2_GPA_times_25~ssp_offer + sfp_offer+ HS_GPA + age + female + english + finish_in_4_yrs , data = df  )
+
 white_test(distinct_affects_on_grade_second_year_model)
 #We found that there is heteroskedasticity so we will do the white correction
 coeftest(distinct_affects_on_grade_second_year_model , vcov = vcovHC(distinct_affects_on_grade_second_year_model,"HC1"))
