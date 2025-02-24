@@ -1,5 +1,5 @@
 This is the Econometrics project of Itay Kristal-Tenenbaum and Omri Dan.
-Fabuary 2025
+February 2025
 
 To run this, you need to have R installed and the libraries that are in the file Main_Analasys.r
 
