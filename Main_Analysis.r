@@ -282,6 +282,9 @@ offer_to_signup <- cov(sfp_and_control$sfp_offer , sfp_and_control$sfp_signup)
 beta_IV <- offer_to_grade / offer_to_signup
 
 
+beta_IV
+
+
 
 
 
