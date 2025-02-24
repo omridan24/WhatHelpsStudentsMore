@@ -1,7 +1,7 @@
 This is the Econometrics project of Itay Kristal-Tenenbaum and Omri Dan.
 February 2025
 
-To run this, you need to have R installed and the libraries that are in the file Main_Analasys.r
+To run this, you need to have R installed and the libraries that are in the file Main_Analysis.r
 
 the csv file is inside the Data folder. 
 
