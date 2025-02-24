@@ -5,4 +5,4 @@ To run this, you need to have R installed and the libraries that are in the file
 
 the csv file is inside the Data folder. 
 
-All the results and explanations are also documented in the .docx file.
+All the results and explanations are also documented in the .pdf file.
