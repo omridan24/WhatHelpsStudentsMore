@@ -229,7 +229,57 @@ summary(grade_for_sfp_signup_model)
 covariance <- cov(sfp_and_control$sfp_signup, sfp_and_control$sfp_offer)
 
 
+sfp_and_control <- df %>% filter(sfp_offer==1 | control==1)
+#Altough we know that in LPM model the Homoskedasticity assumption doesn't accure, we ran white and BP test just to make sure. 
+background_effects_model <- lm(sfp_offer ~ female + HS_GPA + age + english , data = sfp_and_control)
+summary(background_effects_model)
 
+#We want to check Heteroskedasticity:
+#Breusch-Pagan test: 
+sfp_and_control$u_hat<-residuals(background_effects_model)
+sfp_and_control$u_hat_sq<-(sfp_and_control$u_hat)^2
+bp_model <- lm(u_hat_sq~ female + HS_GPA + age + english , data = sfp_and_control )
+summary(bp_model)
+#White Test
+white_test(background_effects_model)
+#We found that there is  heteroskedasticity (E[u|x] != u_hat)
+#Now we need to fix this using white correction.
+coeftest(background_effects_model , vcov = vcovHC(background_effects_model,"HC1"))
+
+#Now we will check for each individual variable, and do white correction for them.
+age_effects_model <- lm(sfp_offer ~  age, data = sfp_and_control)
+coeftest(age_effects_model , vcov = vcovHC(age_effects_model,"HC1"))
+
+HS_GPA_effects_model <- lm(sfp_offer ~  HS_GPA, data = sfp_and_control)
+coeftest(HS_GPA_effects_model , vcov = vcovHC(HS_GPA_effects_model,"HC1"))
+
+female_effects_model <- lm(sfp_offer ~  female, data = sfp_and_control)
+coeftest(female_effects_model , vcov = vcovHC(female_effects_model,"HC1"))
+
+english_effects_model <- lm(sfp_offer ~  english, data = sfp_and_control)
+coeftest(english_effects_model , vcov = vcovHC(english_effects_model,"HC1"))
+
+
+
+
+#Now we will do the 2sls test:
+two_sls_first_step <- lm(sfp_signup~sfp_offer , data=sfp_and_control)
+summary(two_sls_first_step)
+
+sfp_and_control$sfp_signup_hat <- fitted.values(two_sls_first_step)
+
+two_sls_second_step <- lm(first_sem_grade~sfp_signup_hat , data = sfp_and_control)
+
+white_test(two_sls_second_step)
+#White test did not find heteroskedasticity so we won't fix this.
+
+summary(two_sls_second_step)
+
+#Now we will do this using the IV variable 
+
+offer_to_grade <- cov(sfp_and_control$sfp_offer , sfp_and_control$first_sem_grade)
+offer_to_signup <- cov(sfp_and_control$sfp_offer , sfp_and_control$sfp_signup)
+beta_IV <- offer_to_grade / offer_to_signup
 
 
 
